@@ -143,22 +143,22 @@
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Secret Code</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									2
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									9
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									8
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-green-500 font-bold text-white"
+									class="flex h-8 w-8 items-center justify-center rounded bg-green-500 font-bold text-white md:h-10 md:w-10"
 								>
 									1
 								</div>
@@ -169,22 +169,22 @@
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Your Guess</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									7
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									2
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									9
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-green-500 font-bold text-white"
+									class="flex h-8 w-8 items-center justify-center rounded bg-green-500 font-bold text-white md:h-10 md:w-10"
 								>
 									1
 								</div>
@@ -218,22 +218,22 @@
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Secret Code</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-yellow-500 font-bold text-white"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
 								>
 									2
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-yellow-500 font-bold text-white"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
 								>
 									9
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									8
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
 								>
 									1
 								</div>
@@ -244,22 +244,22 @@
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Your Guess</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									7
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-yellow-500 font-bold text-white"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
 								>
 									2
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-yellow-500 font-bold text-white"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
 								>
 									9
 								</div>
 								<div
-									class="flex h-10 w-10 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
 								>
 									1
 								</div>
