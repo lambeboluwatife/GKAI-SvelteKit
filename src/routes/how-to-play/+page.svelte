@@ -125,7 +125,7 @@
 		<div class="grid gap-8 md:grid-cols-2">
 			<!-- Killed -->
 			<div
-				class="rounded-2xl border-2 border-green-200 bg-linear-to-br from-green-50 to-emerald-50 p-8 dark:border-green-900 dark:from-green-950/30 dark:to-emerald-950/30"
+				class="rounded-2xl border-2 border-green-200 bg-linear-to-br from-green-50 to-emerald-50 p-4 dark:border-green-900 dark:from-green-950/30 dark:to-emerald-950/30"
 			>
 				<div class="mb-4 flex items-center">
 					<div class="mr-3 text-4xl">💀</div>
@@ -164,7 +164,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="text-2xl text-gray-400">=</div>
+						<div class="mt-3 px-2 text-2xl text-gray-400">=</div>
 						<div>
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Your Guess</div>
 							<div class="flex space-x-1">
@@ -199,7 +199,7 @@
 
 			<!-- Injured -->
 			<div
-				class="rounded-2xl border-2 border-yellow-200 bg-linear-to-br from-yellow-50 to-amber-50 p-8 dark:border-yellow-900 dark:from-yellow-950/30 dark:to-amber-950/30"
+				class="rounded-2xl border-2 border-yellow-200 bg-linear-to-br from-yellow-50 to-amber-50 p-4 dark:border-yellow-900 dark:from-yellow-950/30 dark:to-amber-950/30"
 			>
 				<div class="mb-4 flex items-center">
 					<div class="mr-3 text-4xl">🤕</div>
@@ -239,7 +239,7 @@
 								</div>
 							</div>
 						</div>
-						<div class="text-2xl text-gray-400">=</div>
+						<div class="mt-3 px-2 text-2xl text-gray-400">=</div>
 						<div>
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Your Guess</div>
 							<div class="flex space-x-1">

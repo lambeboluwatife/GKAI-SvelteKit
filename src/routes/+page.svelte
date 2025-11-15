@@ -118,9 +118,9 @@
 					<!-- Sample guess display -->
 					<div class="space-y-4">
 						<div
-							class="flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+							class="flex flex-col items-center rounded-lg bg-gray-50 p-4 md:flex-row md:justify-between dark:bg-gray-800"
 						>
-							<div class="flex items-center space-x-3">
+							<div class="flex flex-col items-center space-y-2 space-x-3 md:flex-row">
 								<span class="font-medium text-gray-500 dark:text-gray-400">Guess #1:</span>
 								<div class="flex space-x-2">
 									<div
@@ -145,7 +145,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex space-x-4">
+							<div class="mt-4 flex space-x-4 md:mt-0">
 								<span
 									class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
 									>💀 0 Killed</span
@@ -158,9 +158,9 @@
 						</div>
 
 						<div
-							class="flex items-center justify-between rounded-lg bg-gray-50 p-4 dark:bg-gray-800"
+							class="flex flex-col items-center rounded-lg bg-gray-50 p-4 md:flex-row md:justify-between dark:bg-gray-800"
 						>
-							<div class="flex items-center space-x-3">
+							<div class="flex flex-col items-center space-y-2 space-x-3 md:flex-row">
 								<span class="font-medium text-gray-500 dark:text-gray-400">Guess #2:</span>
 								<div class="flex space-x-2">
 									<div
@@ -185,7 +185,7 @@
 									</div>
 								</div>
 							</div>
-							<div class="flex space-x-4">
+							<div class="mt-4 flex space-x-4 md:mt-0">
 								<span
 									class="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-800 dark:bg-green-900/30 dark:text-green-400"
 									>💀 1 Killed</span
@@ -278,7 +278,7 @@
 			<div
 				class="rounded-2xl border border-indigo-100 bg-linear-to-br from-indigo-50 to-purple-50 p-8 md:p-12 dark:border-indigo-900/50 dark:from-indigo-950/30 dark:to-purple-950/30"
 			>
-				<div class="mb-6 flex items-start space-x-4">
+				<div class="mb-6 flex items-start space-x-2 md:space-x-4">
 					<div class="text-4xl">📔</div>
 					<div>
 						<h2 class="mb-4 text-2xl font-bold text-gray-900 md:text-3xl dark:text-gray-100">
