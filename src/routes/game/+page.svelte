@@ -262,7 +262,7 @@
 	/>
 </svelte:head>
 
-<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
 	<!-- Game Header -->
 	<div class="mb-8 text-center">
 		<h1 class="mb-2 text-3xl font-bold text-gray-900 md:text-4xl dark:text-gray-100">
@@ -382,18 +382,18 @@
 					</div>
 				{:else}
 					<div class="max-h-96 space-y-3 overflow-y-auto">
-						{#each guessHistory.slice().reverse() as history}
+						{#each guessHistory.slice() as history}
 							<div
-								class="flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800"
+								class="flex flex-col items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 md:flex-row dark:border-gray-700 dark:bg-gray-800"
 							>
-								<div class="flex items-center space-x-4">
+								<div class="flex items-center space-x-1.5 md:space-x-4">
 									<div class="w-12 text-sm font-medium text-gray-500 dark:text-gray-400">
 										#{history.number}
 									</div>
 									<div class="flex space-x-2">
 										{#each history.guess as num}
 											<div
-												class="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300 bg-white text-lg font-bold text-gray-900 md:h-12 md:w-12 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
+												class="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-lg font-bold text-gray-900 md:h-10 md:w-10 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100"
 											>
 												{num}
 											</div>
