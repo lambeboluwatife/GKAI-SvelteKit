@@ -143,48 +143,48 @@
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Secret Code</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									2
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									9
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									8
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-green-500 font-bold text-white md:h-10 md:w-10"
+									class="flex h-8 w-8 items-center justify-center rounded bg-green-500 text-xs font-bold text-white md:h-10 md:w-10 md:text-base"
 								>
 									1
 								</div>
 							</div>
 						</div>
-						<div class="mt-3 px-2 text-2xl text-gray-400">=</div>
+						<div class="mt-3 px-1 text-2xl text-gray-400 md:px-2">=</div>
 						<div>
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Your Guess</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									7
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									2
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									9
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-green-500 font-bold text-white md:h-10 md:w-10"
+									class="flex h-8 w-8 items-center justify-center rounded bg-green-500 text-xs font-bold text-white md:h-10 md:w-10 md:text-base"
 								>
 									1
 								</div>
@@ -218,48 +218,48 @@
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Secret Code</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-white md:h-10 md:w-10 md:text-base"
 								>
 									2
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-white md:h-10 md:w-10 md:text-base"
 								>
 									9
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									8
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									1
 								</div>
 							</div>
 						</div>
-						<div class="mt-3 px-2 text-2xl text-gray-400">=</div>
+						<div class="mt-3 px-1 text-2xl text-gray-400 md:px-2">=</div>
 						<div>
 							<div class="mb-1 text-xs text-gray-500 dark:text-gray-500">Your Guess</div>
 							<div class="flex space-x-1">
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									7
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-white md:h-10 md:w-10 md:text-base"
 								>
 									2
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 font-bold text-white md:h-10 md:w-10"
+									class="flex h-8 w-8 items-center justify-center rounded bg-yellow-500 text-xs font-bold text-white md:h-10 md:w-10 md:text-base"
 								>
 									9
 								</div>
 								<div
-									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 font-bold md:h-10 md:w-10 dark:bg-gray-800"
+									class="flex h-8 w-8 items-center justify-center rounded bg-gray-100 text-xs font-bold md:h-10 md:w-10 md:text-base dark:bg-gray-800"
 								>
 									1
 								</div>
@@ -366,7 +366,7 @@
 				>
 					<div class="mb-3 flex items-start space-x-3">
 						<div
-							class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 font-bold text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400"
+							class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-xs font-bold text-indigo-600 md:text-base dark:bg-indigo-900/30 dark:text-indigo-400"
 						>
 							{i + 1}
 						</div>
