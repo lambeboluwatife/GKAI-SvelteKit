@@ -64,7 +64,7 @@
 	<meta property="og:title" content="GKAI - Logic Number Guessing Game" />
 	<meta property="og:url" content="https://yourdomain.com/" />
 	<meta property="og:description" content="Can you crack the code?" />
-	<meta property="og:image" content="/og-image.png" />
+	<meta property="og:image" content="/opengraph.png" />
 	<meta name="twitter:card" content="summary_large_image" />
 </svelte:head>
 

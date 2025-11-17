@@ -2,6 +2,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import confetti from 'canvas-confetti';
 
 	// Game state
 	interface GuessEntry {
@@ -176,8 +177,44 @@
 	}
 
 	function celebrateWin() {
-		// Simple confetti effect (could use a library for more advanced)
-		// For now, just show the modal
+		// Check if confetti is loaded
+		if (typeof window.confetti !== 'function') {
+			console.warn('Confetti library not loaded');
+			return;
+		}
+
+		// Trigger confetti animation
+		const duration = 5 * 1000;
+		const animationEnd = Date.now() + duration;
+		const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
+
+		function randomInRange(min: number, max: number) {
+			return Math.random() * (max - min) + min;
+		}
+
+		const interval = setInterval(function () {
+			const timeLeft = animationEnd - Date.now();
+
+			if (timeLeft <= 0) {
+				return clearInterval(interval);
+			}
+
+			const particleCount = 50 * (timeLeft / duration);
+
+			// Confetti from left side
+			window.confetti({
+				...defaults,
+				particleCount,
+				origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+			});
+
+			// Confetti from right side
+			window.confetti({
+				...defaults,
+				particleCount,
+				origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+			});
+		}, 250);
 	}
 
 	function saveGameStats(guesses: number, won: boolean) {
@@ -260,6 +297,10 @@
 		name="description"
 		content="Play GKAI now. Use logic and deduction to guess the secret 4-digit code."
 	/>
+	<!-- Confetti Library -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"
+	></script>
 </svelte:head>
 
 <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
@@ -445,7 +486,7 @@
 
 			<!-- Tips Card -->
 			<div
-				class="rounded-xl border border-purple-200 bg-linear-to-br from-purple-50 to-pink-50 p-6 dark:border-purple-900 dark:from-purple-950/30 dark:to-pink-950/30"
+				class="rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 p-6 dark:border-purple-900 dark:from-purple-950/30 dark:to-pink-950/30"
 			>
 				<h3 class="mb-3 flex items-center text-lg font-semibold text-gray-900 dark:text-gray-100">
 					<span class="mr-2">💡</span>
