@@ -384,7 +384,7 @@
 					<div class="max-h-96 space-y-3 overflow-y-auto">
 						{#each guessHistory.slice() as history}
 							<div
-								class="flex flex-col items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-4 md:flex-row dark:border-gray-700 dark:bg-gray-800"
+								class="flex flex-col items-center justify-center gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 md:flex-row md:justify-between md:gap-2 dark:border-gray-700 dark:bg-gray-800"
 							>
 								<div class="flex items-center space-x-1.5 md:space-x-4">
 									<div class="w-12 text-sm font-medium text-gray-500 dark:text-gray-400">
