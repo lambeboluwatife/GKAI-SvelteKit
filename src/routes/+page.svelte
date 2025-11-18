@@ -65,7 +65,21 @@
 	<meta property="og:url" content="https://yourdomain.com/" />
 	<meta property="og:description" content="Can you crack the code?" />
 	<meta property="og:image" content="/opengraph.png" />
+
+	<!-- Facebook Meta Tags -->
+	<meta property="og:url" content="https://gkai-svelte-kit.vercel.app/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="GKAI - Logic Number Guessing Game" />
+	<meta property="og:description" content="Can you crack the code?" />
+	<meta property="og:image" content="https://gkai-svelte-kit.vercel.app/opengraph.png" />
+
+	<!-- Twitter Meta Tags -->
 	<meta name="twitter:card" content="summary_large_image" />
+	<meta property="twitter:domain" content="gkai-svelte-kit.vercel.app" />
+	<meta property="twitter:url" content="https://gkai-svelte-kit.vercel.app/" />
+	<meta name="twitter:title" content="GKAI - Logic Number Guessing Game" />
+	<meta name="twitter:description" content="Can you crack the code?" />
+	<meta name="twitter:image" content="https://gkai-svelte-kit.vercel.app/opengraph.png" />
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

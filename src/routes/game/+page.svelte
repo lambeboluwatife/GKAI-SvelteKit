@@ -3,6 +3,10 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import confetti from 'canvas-confetti';
+	import TimerMode from '$lib/components/TimerMode.svelte';
+
+	let gameMode = $state<'normal' | 'timer'>('normal');
+	let timerRef = $state<any>(null);
 
 	// Game state
 	interface GuessEntry {
@@ -21,6 +25,11 @@
 	let showRules = $state(false);
 	let availableNumbers = $state([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
+	function handleTimeUp() {
+		gameStatus = 'time-up';
+		saveGameStats(guessCount, false);
+	}
+
 	onMount(() => {
 		startNewGame();
 	});
@@ -31,6 +40,12 @@
 		guessHistory = [];
 		gameStatus = 'playing';
 		guessCount = 0;
+
+		// Reset timer if in timer mode
+		if (gameMode === 'timer' && timerRef) {
+			timerRef.reset();
+		}
+
 		console.log('Secret Code (dev):', secretCode); // Remove in production
 	}
 
@@ -177,16 +192,16 @@
 	}
 
 	function celebrateWin() {
-		// Check if confetti is loaded
-		if (typeof window.confetti !== 'function') {
-			console.warn('Confetti library not loaded');
-			return;
-		}
+		const killedEmoji = confetti.shapeFromText({ text: '💀', scalar: 3 });
+		const targetEmoji = confetti.shapeFromText({ text: '🎯', scalar: 3 });
+		const starEmoji = confetti.shapeFromText({ text: '⭐', scalar: 3 });
+		const targetEmojis = confetti.shapeFromText({
+			text: '🎯',
+			scalar: 2
+		});
 
-		// Trigger confetti animation
 		const duration = 5 * 1000;
 		const animationEnd = Date.now() + duration;
-		const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 100 };
 
 		function randomInRange(min: number, max: number) {
 			return Math.random() * (max - min) + min;
@@ -201,17 +216,45 @@
 
 			const particleCount = 50 * (timeLeft / duration);
 
-			// Confetti from left side
-			window.confetti({
-				...defaults,
+			// Layer 1: Background - smaller, slower
+			confetti({
+				particleCount: particleCount * 0.5,
+				startVelocity: 20,
+				spread: 360,
+				ticks: 100,
+				zIndex: 98,
+				shapes: ['circle'],
+				scalar: 0.8,
+				colors: ['#4F46E5', '#8B5CF6'],
+				origin: { x: randomInRange(0.2, 0.8), y: Math.random() - 0.2 }
+			});
+
+			// Layer 2: Middle - 3D shapes
+			confetti({
 				particleCount,
+				startVelocity: 30,
+				spread: 360,
+				ticks: 80,
+				zIndex: 99,
+				shapes: ['circle', 'square'],
+				scalar: 1.5,
+				colors: ['#10B981', '#F59E0B', '#EF4444'],
+				gravity: 1.2,
+				drift: randomInRange(-0.3, 0.3),
 				origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
 			});
 
-			// Confetti from right side
-			window.confetti({
-				...defaults,
-				particleCount,
+			// Layer 3: Foreground - Big emojis
+			confetti({
+				particleCount: particleCount * 0.2,
+				startVelocity: 35,
+				spread: 360,
+				ticks: 60,
+				zIndex: 100,
+				shapes: [killedEmoji, targetEmoji, starEmoji, targetEmoji],
+				scalar: 3,
+				gravity: 1,
+				drift: randomInRange(-0.5, 0.5),
 				origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
 			});
 		}, 250);
@@ -264,7 +307,13 @@
 
 		// Add to recent games
 		stats.recentGames = [
-			{ guesses, won, date: new Date().toISOString() },
+			{
+				guesses,
+				won,
+				date: new Date().toISOString(),
+				mode: gameMode,
+				timeRemaining: gameMode === 'timer' && timerRef ? timerRef.getTimeRemaining() : null
+			},
 			...stats.recentGames.slice(0, 9) // Keep last 10
 		];
 
@@ -310,6 +359,34 @@
 			Crack the Code
 		</h1>
 		<p class="text-gray-600 dark:text-gray-400">Guess the 4 secret numbers (1-9, no repeats)</p>
+	</div>
+
+	<!-- Game Mode Selector -->
+	<div class="mb-6 flex justify-center gap-4">
+		<button
+			onclick={() => {
+				gameMode = 'normal';
+				startNewGame();
+			}}
+			class="rounded-lg px-6 py-3 font-semibold transition-all
+           {gameMode === 'normal'
+				? 'bg-indigo-600 text-white shadow-lg'
+				: 'bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}"
+		>
+			🎯 Normal Mode
+		</button>
+		<button
+			onclick={() => {
+				gameMode = 'timer';
+				startNewGame();
+			}}
+			class="rounded-lg px-6 py-3 font-semibold transition-all
+           {gameMode === 'timer'
+				? 'bg-indigo-600 text-white shadow-lg'
+				: 'bg-gray-200 text-gray-800 dark:bg-gray-800 dark:text-gray-200'}"
+		>
+			⏱️ Timer Mode
+		</button>
 	</div>
 
 	<div class="grid gap-8 lg:grid-cols-3">
@@ -462,27 +539,41 @@
 
 		<!-- Sidebar -->
 		<div class="space-y-6">
-			<!-- Game Stats Card -->
-			<div
-				class="rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-800 dark:bg-gray-900"
-			>
-				<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Current Game</h3>
-				<div class="space-y-3">
-					<div class="flex items-center justify-between">
-						<span class="text-gray-600 dark:text-gray-400">Guesses Made</span>
-						<span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{guessCount}</span
-						>
-					</div>
-					<div class="flex items-center justify-between">
-						<span class="text-gray-600 dark:text-gray-400">Status</span>
-						<span
-							class="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-						>
-							{gameStatus === 'playing' ? 'In Progress' : gameStatus === 'won' ? 'Won!' : 'Gave Up'}
-						</span>
+			{#if gameMode === 'timer'}
+				<TimerMode
+					bind:this={timerRef}
+					isActive={gameStatus === 'playing'}
+					onTimeUp={handleTimeUp}
+					initialTime={180}
+				/>
+			{:else}
+				<!-- Game Stats Card -->
+				<div
+					class="rounded-xl border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-800 dark:bg-gray-900"
+				>
+					<h3 class="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Current Game</h3>
+					<div class="space-y-3">
+						<div class="flex items-center justify-between">
+							<span class="text-gray-600 dark:text-gray-400">Guesses Made</span>
+							<span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400"
+								>{guessCount}</span
+							>
+						</div>
+						<div class="flex items-center justify-between">
+							<span class="text-gray-600 dark:text-gray-400">Status</span>
+							<span
+								class="rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
+							>
+								{gameStatus === 'playing'
+									? 'In Progress'
+									: gameStatus === 'won'
+										? 'Won!'
+										: 'Gave Up'}
+							</span>
+						</div>
 					</div>
 				</div>
-			</div>
+			{/if}
 
 			<!-- Tips Card -->
 			<div
@@ -493,7 +584,7 @@
 					Quick Tips
 				</h3>
 				<ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-					<li>• Start with different numbers (e.g., 1234, then 5678)</li>
+					<!-- <li>• Start with different numbers (e.g., 1234, then 5678)</li> -->
 					<li>• Track which numbers appear as killed/injured</li>
 					<li>• 0 killed + 0 injured = none of those numbers</li>
 					<li>• Use process of elimination systematically</li>
@@ -566,7 +657,7 @@
 	{/if}
 
 	<!-- Give Up Modal -->
-	{#if gameStatus === 'gave-up'}
+	{#if gameStatus === 'gave-up' || gameStatus === 'time-up'}
 		<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
 			<div
 				class="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-2xl dark:border-gray-800 dark:bg-gray-900"
