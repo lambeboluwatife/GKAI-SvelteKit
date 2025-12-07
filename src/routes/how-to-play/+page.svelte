@@ -39,26 +39,26 @@
 		{
 			title: 'Start with Different Numbers',
 			description:
-				'Your first few guesses should use completely different numbers to identify which digits are in the secret code.',
-			tip: 'Try: 1234, then 5678. This quickly narrows down which numbers are present.'
+				'Your first few guesses should use completely different numbers to identify which digits are in the secret code.'
+			// tip: 'Try: 1234, then 5678. This quickly narrows down which numbers are present.'
 		},
 		{
 			title: 'Track Your Clues',
 			description:
-				'Keep mental notes of which numbers have appeared as killed or injured. Use previous results to inform your next guess.',
-			tip: 'If you get 2 injured with [1,2,3,4], you know 2 of these numbers are in the secret.'
+				'Keep mental notes of which numbers have appeared as killed or injured. Use previous results to inform your next guess.'
+			// tip: 'If you get 2 injured with [1,2,3,4], you know 2 of these numbers are in the secret.'
 		},
 		{
 			title: 'Test Positions Systematically',
 			description:
-				'Once you know which numbers are in the code, test different position combinations methodically.',
-			tip: 'If 2,9,8,1 are your numbers but all injured, try swapping pairs: [9,2,1,8], then [8,1,2,9]'
+				'Once you know which numbers are in the code, test different position combinations methodically.'
+			// tip: 'If 2,9,8,1 are your numbers but all injured, try swapping pairs: [9,2,1,8], then [8,1,2,9]'
 		},
 		{
 			title: 'Use Process of Elimination',
 			description:
-				"When you get 0 killed and 0 injured, you've eliminated 4 numbers! Focus on the remaining 5 digits.",
-			tip: 'With 9 possible digits (1-9), three guesses can potentially narrow to the exact 4 numbers.'
+				"When you get 0 killed and 0 injured, you've eliminated 4 numbers! Focus on the remaining 5 digits."
+			// tip: 'With 9 possible digits (1-9), three guesses can potentially narrow to the exact 4 numbers.'
 		}
 	];
 
@@ -383,9 +383,9 @@
 								<div class="mb-1 text-xs font-semibold text-indigo-900 dark:text-indigo-300">
 									💡 Pro Tip
 								</div>
-								<div class="text-sm text-gray-700 dark:text-gray-400">
+								<!-- <div class="text-sm text-gray-700 dark:text-gray-400">
 									{strategy.tip}
-								</div>
+								</div> -->
 							</div>
 						</div>
 					</div>
