@@ -380,9 +380,9 @@
 							<div
 								class="rounded-lg border-l-4 border-indigo-500 bg-indigo-50 p-3 dark:bg-indigo-900/20"
 							>
-								<div class="mb-1 text-xs font-semibold text-indigo-900 dark:text-indigo-300">
+								<!-- <div class="mb-1 text-xs font-semibold text-indigo-900 dark:text-indigo-300">
 									💡 Pro Tip
-								</div>
+								</div> -->
 								<!-- <div class="text-sm text-gray-700 dark:text-gray-400">
 									{strategy.tip}
 								</div> -->
