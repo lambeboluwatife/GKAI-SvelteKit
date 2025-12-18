@@ -1,5 +1,3 @@
-// src/lib/server/db/types.ts
-
 // User types
 export interface User {
 	_id?: import('mongodb').ObjectId;

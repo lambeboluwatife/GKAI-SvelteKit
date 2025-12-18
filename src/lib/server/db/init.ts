@@ -1,4 +1,3 @@
-// src/lib/server/db/init.ts
 import { getDb } from './mongo';
 
 /**

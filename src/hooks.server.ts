@@ -1,4 +1,5 @@
 // src/hooks.server.ts
+import { getUserFromRequest } from '$lib/server/auth';
 import { initializeDatabase, closeDatabase } from '$lib/server/db';
 import type { Handle } from '@sveltejs/kit';
 
@@ -34,8 +35,9 @@ if (typeof process !== 'undefined') {
 
 // Handle all requests
 export const handle: Handle = async ({ event, resolve }) => {
-	// Add any global middleware here
-	// For example, you could add user authentication to event.locals
+	// Get user from session and add to event.locals
+	const user = getUserFromRequest(event);
+	event.locals.user = user;
 
 	const response = await resolve(event);
 	return response;

@@ -1,4 +1,3 @@
-// src/lib/server/db/collections.ts
 import { Collection } from 'mongodb';
 import { getDb } from './mongo';
 import type { User, UserStats, GameHistory, DailyChallenge, DailySubmission } from './types';
