@@ -5,7 +5,7 @@
 	import TimerMode from '$lib/components/TimerMode.svelte';
 
 	let { data } = $props();
-	const { user } = data;
+	// const { user } = data;
 
 	let gameMode = $state<'normal' | 'timer'>('normal');
 	let timerRef = $state<any>(null);
