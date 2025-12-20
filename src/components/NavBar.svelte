@@ -123,6 +123,31 @@
 						{/if}
 					</a>
 				{/each}
+
+				<!-- Auth Buttons (Desktop) -->
+				{#if $page.data.user}
+					<a
+						href="/profile"
+						onclick={(e) => {
+							e.preventDefault();
+							handleNavClick('/profile');
+						}}
+						class="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-md transition-all duration-200 hover:bg-indigo-700 hover:shadow-lg active:scale-95"
+					>
+						View Profile
+					</a>
+				{:else}
+					<a
+						href="/login"
+						onclick={(e) => {
+							e.preventDefault();
+							handleNavClick('/login');
+						}}
+						class="rounded-lg border-2 border-indigo-600 px-4 py-1.5 text-sm font-semibold text-indigo-600 transition-all duration-200 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
+					>
+						Login
+					</a>
+				{/if}
 			</div>
 
 			<!-- Right side: Dark mode toggle + Mobile menu button -->
@@ -238,6 +263,33 @@
 					{item.label}
 				</a>
 			{/each}
+
+			<!-- Auth Buttons (Mobile) -->
+			<div class="mt-4 border-t border-gray-100 pt-4 dark:border-gray-800">
+				{#if $page.data.user}
+					<a
+						href="/profile"
+						onclick={(e) => {
+							e.preventDefault();
+							handleNavClick('/profile');
+						}}
+						class="flex w-full items-center justify-center rounded-lg bg-indigo-600 px-4 py-3 text-base font-semibold text-white shadow-md transition-all duration-200 hover:bg-indigo-700"
+					>
+						View Profile
+					</a>
+				{:else}
+					<a
+						href="/login"
+						onclick={(e) => {
+							e.preventDefault();
+							handleNavClick('/login');
+						}}
+						class="flex w-full items-center justify-center rounded-lg border-2 border-indigo-600 px-4 py-3 text-base font-semibold text-indigo-600 transition-all duration-200 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-900/20"
+					>
+						Login
+					</a>
+				{/if}
+			</div>
 		</div>
 	</div>
 </nav>
