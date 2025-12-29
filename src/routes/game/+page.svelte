@@ -47,8 +47,6 @@
 		if (gameMode === 'timer' && timerRef) {
 			timerRef.reset();
 		}
-
-		console.log('Secret Code (dev):', secretCode); // Remove in production
 	}
 
 	function generateSecretCode() {
