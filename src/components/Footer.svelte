@@ -14,7 +14,7 @@
 			</div>
 			<div class="flex items-center space-x-6">
 				<a
-					href="https://github.com/lambeboluwatife/GKAI"
+					href="https://github.com/lambeboluwatife/GKAI-SvelteKit"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="text-sm text-gray-600 transition-colors hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400"

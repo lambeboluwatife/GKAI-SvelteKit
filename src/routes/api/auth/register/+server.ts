@@ -74,6 +74,7 @@ export const POST: RequestHandler = async (event) => {
 			longestStreak: 0,
 			averageGuesses: 0,
 			achievements: [],
+			recentGames: [],
 			guessDistribution: {
 				'6-8': 0,
 				'9-11': 0,

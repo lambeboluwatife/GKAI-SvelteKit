@@ -60,7 +60,7 @@
 		<div class="relative px-8 pb-8">
 			<div class="relative -mt-16 mb-6 flex items-end space-x-6">
 				<div
-					class="flex h-32 w-32 items-center justify-center rounded-2xl border-4 border-white bg-indigo-100 text-4xl font-bold text-indigo-600 shadow-lg dark:border-gray-900 dark:bg-gray-800 dark:text-indigo-400"
+					class="flex h-24 w-24 items-center justify-center rounded-2xl border-4 border-white bg-indigo-100 text-4xl font-bold text-indigo-600 shadow-lg md:h-32 md:w-32 dark:border-gray-900 dark:bg-gray-800 dark:text-indigo-400"
 				>
 					{user.username.charAt(0).toUpperCase()}
 				</div>

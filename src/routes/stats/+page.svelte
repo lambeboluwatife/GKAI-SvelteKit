@@ -1,108 +1,23 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import type { PageData } from './$types';
 
-	// Mock stats data - This will come from localStorage in the actual implementation
-	let stats = $state<{
-		gamesPlayed: number;
-		gamesWon: number;
-		totalGuesses: number;
-		bestScore: number | null;
-		currentStreak: number;
-		longestStreak: number;
-		averageGuesses: number;
-		lastPlayed: string | null;
-		guessDistribution: Record<string, number>;
-		recentGames: Array<{ guesses: number; won: boolean; date: string }>;
-	}>({
-		gamesPlayed: 0,
-		gamesWon: 0,
-		totalGuesses: 0,
-		bestScore: null,
-		currentStreak: 0,
-		longestStreak: 0,
-		averageGuesses: 0,
-		lastPlayed: null,
-		guessDistribution: {},
-		recentGames: []
-	});
+	let { data }: { data: PageData } = $props();
 
-	let isLoading = $state(true);
-	let hasPlayedBefore = $state(false);
+	// Stats data now comes from the server via data.stats
+	let stats = $state(data.stats);
 
-	onMount(() => {
-		loadStats();
-	});
-
-	function loadStats() {
-		// Load from localStorage
-		const savedStats = localStorage.getItem('gkai-stats');
-
-		if (savedStats) {
-			stats = JSON.parse(savedStats);
-			hasPlayedBefore = stats.gamesPlayed > 0;
-		} else {
-			// Demo data for illustration
-			stats = {
-				gamesPlayed: 15,
-				gamesWon: 12,
-				totalGuesses: 156,
-				bestScore: 6,
-				currentStreak: 3,
-				longestStreak: 7,
-				averageGuesses: 13,
-				lastPlayed: new Date().toISOString(),
-				guessDistribution: {
-					'6-8': 2,
-					'9-11': 4,
-					'12-14': 3,
-					'15-17': 2,
-					'18-20': 1,
-					'21+': 0
-				},
-				recentGames: [
-					{ guesses: 12, won: true, date: '2024-01-15' },
-					{ guesses: 15, won: true, date: '2024-01-14' },
-					{ guesses: 9, won: true, date: '2024-01-13' },
-					{ guesses: 18, won: true, date: '2024-01-12' },
-					{ guesses: 11, won: true, date: '2024-01-11' }
-				]
-			};
-			hasPlayedBefore = true;
-		}
-
-		isLoading = false;
-	}
-
-	function resetStats() {
-		if (confirm('Are you sure you want to reset all your statistics? This cannot be undone.')) {
-			localStorage.removeItem('gkai-stats');
-			stats = {
-				gamesPlayed: 0,
-				gamesWon: 0,
-				totalGuesses: 0,
-				bestScore: null,
-				currentStreak: 0,
-				longestStreak: 0,
-				averageGuesses: 0,
-				lastPlayed: null,
-				guessDistribution: {},
-				recentGames: /** @type {{guesses:number; won:boolean; date:string}[]} */ ([])
-			};
-			hasPlayedBefore = false;
-		}
-	}
+	let isLoading = $state(false);
+	let hasPlayedBefore = $derived(stats.gamesPlayed > 0);
 
 	function startPlaying() {
 		goto('/game');
 	}
 
-	// Calculated stats
-	$effect(() => {
-		if (stats.gamesWon > 0) {
-			stats.averageGuesses = Math.round(stats.totalGuesses / stats.gamesWon);
-		}
-	});
+	// Average guesses calculation
+	const averageGuesses = $derived(
+		stats.gamesWon > 0 ? Math.round(stats.totalGuesses / stats.gamesWon) : 0
+	);
 
 	const winRate = $derived(
 		stats.gamesPlayed > 0 ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100) : 0
@@ -366,7 +281,7 @@
 					Recent Games
 				</h2>
 
-				{#if stats.recentGames.length > 0}
+				{#if stats.recentGames && stats.recentGames.length > 0}
 					<div class="overflow-x-auto">
 						<table class="w-full">
 							<thead>
@@ -386,7 +301,7 @@
 								</tr>
 							</thead>
 							<tbody>
-								{#each stats.recentGames as game, i}
+								{#each stats.recentGames as game}
 									<tr
 										class="border-b border-gray-100 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800"
 									>
@@ -435,12 +350,6 @@
 				class="w-full transform rounded-lg bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-indigo-700 hover:shadow-xl sm:w-auto"
 			>
 				Play Another Game
-			</button>
-			<button
-				onclick={resetStats}
-				class="w-full rounded-lg bg-gray-200 px-8 py-4 text-lg font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-300 sm:w-auto dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
-			>
-				Reset Statistics
 			</button>
 		</section>
 	{/if}

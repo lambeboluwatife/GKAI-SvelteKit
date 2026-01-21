@@ -13,6 +13,14 @@ export interface User {
 	};
 }
 
+export interface RecentGame {
+	gameId: string;
+	won: boolean;
+	guesses: number;
+	mode: 'normal' | 'timer' | 'daily';
+	date: Date;
+}
+
 export interface UserStats {
 	_id?: import('mongodb').ObjectId;
 	userId: import('mongodb').ObjectId;
@@ -25,6 +33,7 @@ export interface UserStats {
 	averageGuesses: number;
 	lastPlayed?: Date;
 	achievements: string[];
+	recentGames: RecentGame[];
 	guessDistribution: Record<string, number>;
 }
 
@@ -42,6 +51,7 @@ export interface GameHistory {
 		injured: number;
 		timestamp: Date;
 	}>;
+	isCompleted: boolean;
 	completedAt: Date;
 }
 

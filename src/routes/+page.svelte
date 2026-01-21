@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { goto } from '$app/navigation';
 
 	const features = [
@@ -109,13 +109,13 @@
 			<!-- CTA Buttons -->
 			<div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
 				<button
-					on:click={startGame}
+					onclick={startGame}
 					class="w-full transform rounded-lg bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-indigo-700 hover:shadow-xl sm:w-auto"
 				>
 					Start Playing Now
 				</button>
 				<button
-					on:click={learnHow}
+					onclick={learnHow}
 					class="w-full rounded-lg bg-gray-200 px-8 py-4 text-lg font-semibold text-gray-800 transition-all duration-200 hover:bg-gray-300 sm:w-auto dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
 				>
 					How to Play
@@ -329,7 +329,7 @@
 				Join the challenge and see how many guesses it takes you to crack the code.
 			</p>
 			<button
-				on:click={startGame}
+				onclick={startGame}
 				class="transform rounded-lg bg-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-lg transition-all duration-200 hover:scale-105 hover:bg-indigo-700 hover:shadow-xl"
 			>
 				Play GKAI Now

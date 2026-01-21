@@ -5,9 +5,9 @@
 	import TimerMode from '$lib/components/TimerMode.svelte';
 
 	let { data } = $props();
-	// const { user } = data;
+	const { user, currentGame, stats } = data;
 
-	let gameMode = $state<'normal' | 'timer'>('normal');
+	let gameMode = $state<'normal' | 'timer' | 'daily'>(currentGame?.mode || 'normal');
 	let timerRef = $state<any>(null);
 
 	// Game state
@@ -18,75 +18,49 @@
 		number: number;
 	}
 
-	let secretCode = $state<number[]>([]);
+	let secretCode = $state<number[]>(currentGame?.secretCode || []);
 	let currentGuess = $state<(number | '')[]>(['', '', '', '']);
-	let guessHistory = $state<GuessEntry[]>([]);
-	let gameStatus = $state('playing'); // 'playing', 'won', 'gave-up'
-	let guessCount = $state(0);
+	let guessHistory = $state<GuessEntry[]>(
+		(currentGame?.guesses || []).map((g: any, i: number) => ({
+			guess: g.numbers,
+			killed: g.killed,
+			injured: g.injured,
+			number: i + 1
+		}))
+	);
+	let gameStatus = $state(
+		currentGame?.isCompleted ? (currentGame.won ? 'won' : 'gave-up') : 'playing'
+	); // 'playing', 'won', 'gave-up'
+	let guessCount = $state(currentGame?.guessCount || 0);
 	let inputRefs = $state<HTMLInputElement[]>([]);
 	let showRules = $state(false);
 	let availableNumbers = $state([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 	function handleTimeUp() {
 		gameStatus = 'time-up';
-		saveGameStats(guessCount, false);
+		completeGameOnServer(false);
 	}
 
-	onMount(() => {
-		startNewGame();
-	});
-
-	function startNewGame() {
-		secretCode = generateSecretCode();
-		currentGuess = ['', '', '', ''];
-		guessHistory = [];
-		gameStatus = 'playing';
-		guessCount = 0;
-
-		// Reset timer if in timer mode
-		if (gameMode === 'timer' && timerRef) {
-			timerRef.reset();
-		}
-	}
-
-	function generateSecretCode() {
-		const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-		const code = [];
-
-		for (let i = 0; i < 4; i++) {
-			const randomIndex = Math.floor(Math.random() * numbers.length);
-			code.push(numbers[randomIndex]);
-			numbers.splice(randomIndex, 1);
-		}
-
-		return code;
+	async function startNewGame() {
+		window.location.reload();
 	}
 
 	function handleInput(index: number, event: Event) {
 		const value = (event.target as HTMLInputElement).value;
-
-		// Only allow numbers 1-9
 		if (value && !/^[1-9]$/.test(value)) {
 			(event.target as HTMLInputElement).value = '';
 			return;
 		}
-
-		// Update current guess
 		currentGuess[index] = value ? parseInt(value) : '';
-
-		// Auto-advance to next input
 		if (value && index < 3) {
 			inputRefs[index + 1]?.focus();
 		}
 	}
 
 	function handleKeyDown(index: number, event: KeyboardEvent) {
-		// Backspace: clear current and go to previous
 		if (event.key === 'Backspace' && !currentGuess[index] && index > 0) {
 			inputRefs[index - 1]?.focus();
 		}
-
-		// Arrow keys navigation
 		if (event.key === 'ArrowLeft' && index > 0) {
 			event.preventDefault();
 			inputRefs[index - 1]?.focus();
@@ -95,8 +69,6 @@
 			event.preventDefault();
 			inputRefs[index + 1]?.focus();
 		}
-
-		// Enter: submit guess
 		if (event.key === 'Enter') {
 			submitGuess();
 		}
@@ -105,11 +77,8 @@
 	function handlePaste(event: ClipboardEvent) {
 		event.preventDefault();
 		const pastedData = event.clipboardData?.getData('text').trim() || '';
-
-		// Check if pasted data is 4 digits
 		if (/^[1-9]{4}$/.test(pastedData)) {
 			const digits = pastedData.split('');
-			// Check for no duplicates
 			if (new Set(digits).size === 4) {
 				currentGuess = digits.map((d) => parseInt(d));
 				inputRefs[3]?.focus();
@@ -117,88 +86,62 @@
 		}
 	}
 
-	function submitGuess() {
-		// Validate guess
+	async function submitGuess() {
 		if (currentGuess.some((val) => val === '')) {
 			alert('Please enter all 4 numbers');
 			return;
 		}
-
-		// Check for duplicates
 		if (new Set(currentGuess).size !== 4) {
 			alert('All numbers must be different');
 			return;
 		}
 
-		// Calculate killed and injured
-		const result = calculateResult(
-			currentGuess.map((val) => (val === '' ? null : val)) as (number | null)[],
-			secretCode
-		);
+		try {
+			const response = await fetch('/api/game', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({ guess: currentGuess })
+			});
 
-		guessCount++;
-		guessHistory = [
-			...guessHistory,
-			{
-				guess: [...currentGuess],
-				killed: result.killed,
-				injured: result.injured,
-				number: guessCount
+			if (!response.ok) {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Failed to submit guess');
 			}
-		];
 
-		// Check win condition
-		if (result.killed === 4) {
-			gameStatus = 'won';
-			saveGameStats(guessCount, true);
-			setTimeout(() => {
-				celebrateWin();
-			}, 500);
-		}
+			const resultData = await response.json();
+			const { result, won } = resultData;
 
-		// Clear input for next guess
-		currentGuess = ['', '', '', ''];
-		inputRefs[0]?.focus();
-	}
-
-	function calculateResult(guess: (number | null)[], secret: number[]) {
-		let killed = 0;
-		let injured = 0;
-
-		const secretCopy: (number | null)[] = [...secret];
-		const guessCopy = [...guess];
-
-		// First pass: count killed (exact matches)
-		for (let i = 0; i < 4; i++) {
-			if (guessCopy[i] === secretCopy[i]) {
-				killed++;
-				secretCopy[i] = null;
-				guessCopy[i] = null;
-			}
-		}
-
-		// Second pass: count injured (right number, wrong position)
-		for (let i = 0; i < 4; i++) {
-			if (guessCopy[i] !== null) {
-				const foundIndex = secretCopy.indexOf(guessCopy[i]);
-				if (foundIndex !== -1) {
-					injured++;
-					secretCopy[foundIndex] = null;
+			guessCount++;
+			guessHistory = [
+				...guessHistory,
+				{
+					guess: [...currentGuess],
+					killed: result.killed,
+					injured: result.injured,
+					number: guessCount
 				}
-			}
-		}
+			];
 
-		return { killed, injured };
+			if (won) {
+				gameStatus = 'won';
+				setTimeout(() => {
+					celebrateWin();
+				}, 500);
+			}
+
+			currentGuess = ['', '', '', ''];
+			inputRefs[0]?.focus();
+		} catch (error: any) {
+			alert(error.message);
+		}
 	}
 
 	function celebrateWin() {
 		const killedEmoji = confetti.shapeFromText({ text: '💀', scalar: 3 });
 		const targetEmoji = confetti.shapeFromText({ text: '🎯', scalar: 3 });
 		const starEmoji = confetti.shapeFromText({ text: '⭐', scalar: 3 });
-		const targetEmojis = confetti.shapeFromText({
-			text: '🎯',
-			scalar: 2
-		});
 
 		const duration = 5 * 1000;
 		const animationEnd = Date.now() + duration;
@@ -209,14 +152,10 @@
 
 		const interval = setInterval(function () {
 			const timeLeft = animationEnd - Date.now();
-
 			if (timeLeft <= 0) {
 				return clearInterval(interval);
 			}
-
 			const particleCount = 50 * (timeLeft / duration);
-
-			// Layer 1: Background - smaller, slower
 			confetti({
 				particleCount: particleCount * 0.5,
 				startVelocity: 20,
@@ -228,8 +167,6 @@
 				colors: ['#4F46E5', '#8B5CF6'],
 				origin: { x: randomInRange(0.2, 0.8), y: Math.random() - 0.2 }
 			});
-
-			// Layer 2: Middle - 3D shapes
 			confetti({
 				particleCount,
 				startVelocity: 30,
@@ -243,15 +180,13 @@
 				drift: randomInRange(-0.3, 0.3),
 				origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
 			});
-
-			// Layer 3: Foreground - Big emojis
 			confetti({
 				particleCount: particleCount * 0.2,
 				startVelocity: 35,
 				spread: 360,
 				ticks: 60,
 				zIndex: 100,
-				shapes: [killedEmoji, targetEmoji, starEmoji, targetEmoji],
+				shapes: [killedEmoji, targetEmoji, starEmoji],
 				scalar: 3,
 				gravity: 1,
 				drift: randomInRange(-0.5, 0.5),
@@ -260,72 +195,22 @@
 		}, 250);
 	}
 
-	function saveGameStats(guesses: number, won: boolean) {
-		// Load existing stats
-		const savedStats = localStorage.getItem('gkai-stats');
-		let stats: any = savedStats
-			? JSON.parse(savedStats)
-			: {
-					gamesPlayed: 0,
-					gamesWon: 0,
-					totalGuesses: 0,
-					bestScore: null,
-					currentStreak: 0,
-					longestStreak: 0,
-					guessDistribution: {},
-					recentGames: []
-				};
-
-		// Update stats
-		stats.gamesPlayed++;
-		if (won) {
-			stats.gamesWon++;
-			stats.totalGuesses += guesses;
-			stats.currentStreak++;
-
-			if (!stats.bestScore || guesses < stats.bestScore) {
-				stats.bestScore = guesses;
-			}
-
-			if (stats.currentStreak > stats.longestStreak) {
-				stats.longestStreak = stats.currentStreak;
-			}
-
-			// Update distribution
-			let range: string;
-			if (guesses <= 8) range = '6-8';
-			else if (guesses <= 11) range = '9-11';
-			else if (guesses <= 14) range = '12-14';
-			else if (guesses <= 17) range = '15-17';
-			else if (guesses <= 20) range = '18-20';
-			else range = '21+';
-
-			stats.guessDistribution[range] = (stats.guessDistribution[range] || 0) + 1;
-		} else {
-			stats.currentStreak = 0;
+	async function completeGameOnServer(won: boolean) {
+		try {
+			await fetch('/api/game', {
+				method: 'PATCH',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ isCompleted: true, won })
+			});
+		} catch (e) {
+			console.error('Failed to update server stats:', e);
 		}
-
-		// Add to recent games
-		stats.recentGames = [
-			{
-				guesses,
-				won,
-				date: new Date().toISOString(),
-				mode: gameMode,
-				timeRemaining: gameMode === 'timer' && timerRef ? timerRef.getTimeRemaining() : null
-			},
-			...stats.recentGames.slice(0, 9) // Keep last 10
-		];
-
-		stats.lastPlayed = new Date().toISOString();
-
-		localStorage.setItem('gkai-stats', JSON.stringify(stats));
 	}
 
 	function giveUp() {
 		if (confirm('Are you sure you want to give up and see the answer?')) {
 			gameStatus = 'gave-up';
-			saveGameStats(guessCount, false);
+			completeGameOnServer(false);
 		}
 	}
 
@@ -333,7 +218,6 @@
 		goto('/stats');
 	}
 
-	// Update available numbers based on current guess
 	$effect(() => {
 		const used = currentGuess.filter((n) => n !== '');
 		availableNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((n) => !used.includes(n));
@@ -346,10 +230,6 @@
 		name="description"
 		content="Play GKAI now. Use logic and deduction to guess the secret 4-digit code."
 	/>
-	<!-- Confetti Library -->
-	<script
-		src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"
-	></script>
 </svelte:head>
 
 <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
@@ -500,7 +380,7 @@
 					</div>
 				{:else}
 					<div class="max-h-96 space-y-3 overflow-y-auto">
-						{#each guessHistory.slice() as history}
+						{#each guessHistory.slice().reverse() as history}
 							<div
 								class="flex flex-col items-center justify-center gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 md:flex-row md:justify-between md:gap-2 dark:border-gray-700 dark:bg-gray-800"
 							>
@@ -577,14 +457,13 @@
 
 			<!-- Tips Card -->
 			<div
-				class="rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-pink-50 p-6 dark:border-purple-900 dark:from-purple-950/30 dark:to-pink-950/30"
+				class="rounded-xl border border-purple-200 bg-linear-to-br from-purple-50 to-pink-50 p-6 dark:border-purple-900 dark:from-purple-950/30 dark:to-pink-950/30"
 			>
 				<h3 class="mb-3 flex items-center text-lg font-semibold text-gray-900 dark:text-gray-100">
 					<span class="mr-2">💡</span>
 					Quick Tips
 				</h3>
 				<ul class="space-y-2 text-sm text-gray-700 dark:text-gray-300">
-					<!-- <li>• Start with different numbers (e.g., 1234, then 5678)</li> -->
 					<li>• Track which numbers appear as killed/injured</li>
 					<li>• 0 killed + 0 injured = none of those numbers</li>
 					<li>• Use process of elimination systematically</li>
@@ -617,7 +496,9 @@
 			>
 				<div class="text-center">
 					<div class="mb-4 text-6xl">🎉</div>
-					<h2 class="mb-2 text-3xl font-bold text-gray-900 dark:text-gray-100">Congratulations!</h2>
+					<h2 class="mb-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
+						Congratulations {user.username}!
+					</h2>
 					<p class="mb-6 text-lg text-gray-600 dark:text-gray-400">
 						You cracked the code in <span class="font-bold text-indigo-600 dark:text-indigo-400"
 							>{guessCount}</span
