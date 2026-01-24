@@ -24,8 +24,11 @@ export interface RecentGame {
 export interface UserStats {
 	_id?: import('mongodb').ObjectId;
 	userId: import('mongodb').ObjectId;
+	username: string; // Denormalized for leaderboard performance
 	gamesPlayed: number;
 	gamesWon: number;
+	xp: number;
+	level: number;
 	totalGuesses: number;
 	bestScore: number | null;
 	currentStreak: number;

@@ -16,55 +16,70 @@ export const POST: RequestHandler = async (event) => {
 	const { guess } = await event.request.json();
 	const userId = new ObjectId(user.id);
 
-	// Find the current active game
-	let currentGame = await gameHistoryCollection.findOne({
-		userId,
-		isCompleted: false
-	});
+	try {
+		// Find the current active game
+		let currentGame = await gameHistoryCollection.findOne({
+			userId,
+			isCompleted: false
+		});
 
-	if (!currentGame) {
-		throw error(404, 'No active game found. Please refresh the page to start a new game.');
-	}
-
-	const result = calculateResult(guess, currentGame.secretCode);
-	const won = result.killed === 4;
-
-	// Update the game record
-	const updatedGuesses = [
-		...currentGame.guesses,
-		{
-			numbers: guess,
-			killed: result.killed,
-			injured: result.injured,
-			timestamp: new Date()
+		if (!currentGame) {
+			return json(
+				{ message: 'No active game found. Please refresh to start a new sessions.' },
+				{ status: 404 }
+			);
 		}
-	];
 
-	const guessCount = currentGame.guessCount + 1;
+		if (currentGame.isCompleted) {
+			return json({ message: 'This game has already been completed.' }, { status: 400 });
+		}
 
-	await gameHistoryCollection.updateOne(
-		{ _id: currentGame._id },
-		{
-			$set: {
-				guesses: updatedGuesses,
-				guessCount: guessCount,
-				won: won,
-				isCompleted: won, // End game if won
-				completedAt: won ? new Date() : currentGame.completedAt
+		const result = calculateResult(guess, currentGame.secretCode);
+		const won = result.killed === 4;
+
+		// Update the game record
+		const updatedGuesses = [
+			...currentGame.guesses,
+			{
+				numbers: guess,
+				killed: result.killed,
+				injured: result.injured,
+				timestamp: new Date()
 			}
+		];
+
+		const guessCount = currentGame.guessCount + 1;
+
+		await gameHistoryCollection.updateOne(
+			{ _id: currentGame._id },
+			{
+				$set: {
+					guesses: updatedGuesses,
+					guessCount: guessCount,
+					won: won,
+					isCompleted: won, // End game if won
+					completedAt: won ? new Date() : currentGame.completedAt
+				}
+			}
+		);
+
+		if (won) {
+			await updateStats(userId, user.username, guessCount, true, currentGame);
 		}
-	);
 
-	if (won) {
-		await updateStats(userId, guessCount, true, currentGame);
+		return json({
+			result,
+			won,
+			isCompleted: won,
+			gameId: currentGame._id.toString()
+		});
+	} catch (err) {
+		console.error('Game submission error:', err);
+		return json(
+			{ message: 'Failed to process guess. Please check your connection.' },
+			{ status: 500 }
+		);
 	}
-
-	return json({
-		result,
-		won,
-		isCompleted: won,
-		gameId: currentGame._id.toString()
-	});
 };
 
 export const PATCH: RequestHandler = async (event) => {
@@ -98,12 +113,18 @@ export const PATCH: RequestHandler = async (event) => {
 		}
 	);
 
-	await updateStats(userId, currentGame.guessCount, won, currentGame);
+	await updateStats(userId, user.username, currentGame.guessCount, won, currentGame);
 
 	return json({ success: true });
 };
 
-async function updateStats(userId: ObjectId, guesses: number, won: boolean, game: any) {
+async function updateStats(
+	userId: ObjectId,
+	username: string,
+	guesses: number,
+	won: boolean,
+	game: any
+) {
 	const statsCollection = await getUserStatsCollection();
 
 	const stats = await statsCollection.findOne({ userId });
@@ -112,8 +133,11 @@ async function updateStats(userId: ObjectId, guesses: number, won: boolean, game
 		// Initialize stats if they don't exist
 		const initialStats = {
 			userId,
+			username,
 			gamesPlayed: 1,
 			gamesWon: won ? 1 : 0,
+			xp: won ? 100 + (30 - guesses) * 10 : 10,
+			level: 1,
 			totalGuesses: won ? guesses : 0,
 			bestScore: won ? guesses : null,
 			currentStreak: won ? 1 : 0,
@@ -136,6 +160,11 @@ async function updateStats(userId: ObjectId, guesses: number, won: boolean, game
 		return;
 	}
 
+	// Calculate XP
+	const gainedXp = won ? 100 + (30 - guesses) * 10 : 10;
+	const newXp = (stats.xp || 0) + gainedXp;
+	const newLevel = Math.floor(Math.sqrt(newXp / 100)) + 1;
+
 	const newGamesPlayed = stats.gamesPlayed + 1;
 	const newGamesWon = won ? stats.gamesWon + 1 : stats.gamesWon;
 	const newTotalGuesses = won ? stats.totalGuesses + guesses : stats.totalGuesses;
@@ -147,6 +176,21 @@ async function updateStats(userId: ObjectId, guesses: number, won: boolean, game
 			: Math.min(stats.bestScore, guesses)
 		: stats.bestScore;
 	const newAverageGuesses = newGamesWon > 0 ? newTotalGuesses / newGamesWon : 0;
+
+	// Achievement Logic
+	const newAchievements = [...(stats.achievements || [])];
+	const checkAchievement = (name: string) => {
+		if (!newAchievements.includes(name)) newAchievements.push(name);
+	};
+
+	if (won && guesses <= 5) checkAchievement('Sniper');
+	if (won && guesses <= 8) checkAchievement('Master Codebreaker');
+	if (won && guesses <= 10) checkAchievement('Quick Thinker');
+	if (newCurrentStreak >= 5) checkAchievement('On Fire');
+	if (newGamesWon >= 10) checkAchievement('Perfectionist');
+	if (newGamesWon >= 50) checkAchievement('Elite Agent');
+	if (stats.gamesPlayed >= 25 || stats.gamesPlayed + 1 >= 25) checkAchievement('Veteran Player');
+	if (won) checkAchievement('First Victory');
 	const newRecentGames = [
 		...(stats.recentGames || []),
 		{
@@ -167,6 +211,9 @@ async function updateStats(userId: ObjectId, guesses: number, won: boolean, game
 			longestStreak: newLongestStreak,
 			bestScore: newBestScore,
 			averageGuesses: newAverageGuesses,
+			xp: newXp,
+			level: newLevel,
+			achievements: newAchievements,
 			lastPlayed: new Date(),
 			recentGames: newRecentGames
 		}
@@ -177,9 +224,13 @@ async function updateStats(userId: ObjectId, guesses: number, won: boolean, game
 		updateData.$inc = { [`guessDistribution.${range}`]: 1 };
 	}
 
-	// Ensure fields exist for legacy users
-	if (!stats.recentGames || !stats.guessDistribution) {
+	// Ensure fields exist for legacy users, and sync username
+	updateData.$set.username = username;
+
+	if (!stats.recentGames || !stats.guessDistribution || stats.xp === undefined) {
 		updateData.$set.recentGames = newRecentGames;
+		updateData.$set.xp = stats.xp ?? newXp;
+		updateData.$set.level = stats.level ?? newLevel;
 		if (!stats.guessDistribution) {
 			updateData.$set.guessDistribution = won ? { [getRange(guesses)]: 1 } : {};
 		}

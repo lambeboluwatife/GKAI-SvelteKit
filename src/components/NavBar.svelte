@@ -10,6 +10,7 @@
 		{ label: 'Home', href: '/' },
 		{ label: 'Play', href: '/game' },
 		{ label: 'How to Play', href: '/how-to-play' },
+		{ label: 'Leaderboard', href: '/leaderboard' },
 		{ label: 'Stats', href: '/stats' }
 	];
 

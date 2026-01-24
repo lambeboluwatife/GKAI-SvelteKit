@@ -4,6 +4,7 @@ import { JWT_SECRET } from '$env/static/private';
 import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import type { User } from './db';
+import { getUsersCollection } from './db/collections';
 
 if (!JWT_SECRET) {
 	throw new Error('JWT_SECRET environment variable is required');
@@ -183,6 +184,28 @@ export function isValidUsername(username: string): { valid: boolean; message?: s
 	}
 
 	return { valid: true };
+}
+
+/**
+ * Check if a username is already taken (case-insensitive)
+ */
+export async function isUsernameTaken(username: string): Promise<boolean> {
+	const usersCollection = await getUsersCollection();
+	const existingUser = await usersCollection.findOne({
+		username: { $regex: new RegExp(`^${username}$`, 'i') }
+	});
+	return !!existingUser;
+}
+
+/**
+ * Check if an email is already taken
+ */
+export async function isEmailTaken(email: string): Promise<boolean> {
+	const usersCollection = await getUsersCollection();
+	const existingUser = await usersCollection.findOne({
+		email: email.toLowerCase()
+	});
+	return !!existingUser;
 }
 
 /**

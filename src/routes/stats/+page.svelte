@@ -49,9 +49,21 @@
 			color: 'yellow'
 		},
 		{
-			label: 'Average Guesses',
-			value: stats.averageGuesses || 'N/A',
+			label: 'Avg Guesses',
+			value: stats.averageGuesses.toFixed(1) || 'N/A',
 			icon: '📈',
+			color: 'purple'
+		},
+		{
+			label: 'Level',
+			value: stats.level,
+			icon: '⭐',
+			color: 'indigo'
+		},
+		{
+			label: 'XP',
+			value: stats.xp,
+			icon: '✨',
 			color: 'purple'
 		},
 		{
@@ -71,11 +83,32 @@
 			progress: stats.gamesWon >= 1 ? 100 : 0
 		},
 		{
+			title: 'Sniper',
+			description: 'Win a game in 5 guesses or less',
+			icon: '🎯',
+			unlocked: stats.bestScore !== null && stats.bestScore <= 5,
+			progress: stats.bestScore ? Math.min((5 / stats.bestScore) * 100, 100) : 0
+		},
+		{
+			title: 'Master Codebreaker',
+			description: 'Win a game in 8 guesses or less',
+			icon: '👑',
+			unlocked: stats.bestScore !== null && stats.bestScore <= 8,
+			progress: stats.bestScore ? Math.min((8 / stats.bestScore) * 100, 100) : 0
+		},
+		{
 			title: 'Quick Thinker',
 			description: 'Win a game in 10 guesses or less',
 			icon: '⚡',
-			unlocked: stats.bestScore && stats.bestScore <= 10,
+			unlocked: stats.bestScore !== null && stats.bestScore <= 10,
 			progress: stats.bestScore ? Math.min((10 / stats.bestScore) * 100, 100) : 0
+		},
+		{
+			title: 'Perfectionist',
+			description: 'Win 10 games',
+			icon: '💎',
+			unlocked: stats.gamesWon >= 10,
+			progress: Math.min((stats.gamesWon / 10) * 100, 100)
 		},
 		{
 			title: 'Veteran Player',
@@ -85,25 +118,18 @@
 			progress: Math.min((stats.gamesPlayed / 25) * 100, 100)
 		},
 		{
-			title: 'Winning Streak',
+			title: 'On Fire',
 			description: 'Win 5 games in a row',
 			icon: '🔥',
 			unlocked: stats.longestStreak >= 5,
 			progress: Math.min((stats.longestStreak / 5) * 100, 100)
 		},
 		{
-			title: 'Master Codebreaker',
-			description: 'Win a game in 8 guesses or less',
-			icon: '👑',
-			unlocked: stats.bestScore && stats.bestScore <= 8,
-			progress: stats.bestScore ? Math.min((8 / stats.bestScore) * 100, 100) : 0
-		},
-		{
-			title: 'Perfectionist',
-			description: 'Win 10 games',
+			title: 'Elite Agent',
+			description: 'Win 50 games',
 			icon: '💎',
-			unlocked: stats.gamesWon >= 10,
-			progress: Math.min((stats.gamesWon / 10) * 100, 100)
+			unlocked: stats.gamesWon >= 50,
+			progress: Math.min((stats.gamesWon / 50) * 100, 100)
 		}
 	]);
 </script>
@@ -154,16 +180,16 @@
 	{:else}
 		<!-- Stats Overview Cards -->
 		<section class="mb-12">
-			<div class="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+			<div class="grid grid-cols-2 gap-4 text-xs md:grid-cols-4 lg:grid-cols-8">
 				{#each statCards as card}
 					<div
 						class="rounded-xl border border-gray-200 bg-white p-6 text-center shadow-md dark:border-gray-800 dark:bg-gray-900"
 					>
-						<div class="mb-2 text-3xl">{card.icon}</div>
-						<div class="mb-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+						<div class="mb-2 text-2xl">{card.icon}</div>
+						<div class="mb-1 text-xl font-black text-gray-900 dark:text-gray-100">
 							{card.value}
 						</div>
-						<div class="text-sm text-gray-600 dark:text-gray-400">
+						<div class="text-[10px] font-bold text-gray-400 uppercase">
 							{card.label}
 						</div>
 					</div>

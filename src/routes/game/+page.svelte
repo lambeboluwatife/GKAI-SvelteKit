@@ -9,6 +9,7 @@
 
 	let gameMode = $state<'normal' | 'timer' | 'daily'>(currentGame?.mode || 'normal');
 	let timerRef = $state<any>(null);
+	const MAX_GUESSES = 30;
 
 	// Game state
 	interface GuessEntry {
@@ -29,12 +30,19 @@
 		}))
 	);
 	let gameStatus = $state(
-		currentGame?.isCompleted ? (currentGame.won ? 'won' : 'gave-up') : 'playing'
-	); // 'playing', 'won', 'gave-up'
+		currentGame?.isCompleted ? (currentGame.won ? 'won' : 'lost') : 'playing'
+	); // 'playing', 'won', 'lost', 'time-up'
 	let guessCount = $state(currentGame?.guessCount || 0);
 	let inputRefs = $state<HTMLInputElement[]>([]);
 	let showRules = $state(false);
+	let showGiveUpConfirm = $state(false);
+	let isSubmitting = $state(false);
+	let guessSortOrder = $state<'desc' | 'asc'>('desc');
 	let availableNumbers = $state([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
+	const sortedGuessHistory = $derived(
+		guessSortOrder === 'desc' ? [...guessHistory].reverse() : guessHistory
+	);
 
 	function handleTimeUp() {
 		gameStatus = 'time-up';
@@ -96,13 +104,16 @@
 			return;
 		}
 
+		isSubmitting = true;
+		const submittedGuess = [...currentGuess];
+
 		try {
 			const response = await fetch('/api/game', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				body: JSON.stringify({ guess: currentGuess })
+				body: JSON.stringify({ guess: submittedGuess })
 			});
 
 			if (!response.ok) {
@@ -117,7 +128,7 @@
 			guessHistory = [
 				...guessHistory,
 				{
-					guess: [...currentGuess],
+					guess: submittedGuess,
 					killed: result.killed,
 					injured: result.injured,
 					number: guessCount
@@ -129,12 +140,17 @@
 				setTimeout(() => {
 					celebrateWin();
 				}, 500);
+			} else if (guessCount >= MAX_GUESSES) {
+				gameStatus = 'lost';
+				completeGameOnServer(false);
 			}
 
 			currentGuess = ['', '', '', ''];
 			inputRefs[0]?.focus();
 		} catch (error: any) {
 			alert(error.message);
+		} finally {
+			isSubmitting = false;
 		}
 	}
 
@@ -208,10 +224,13 @@
 	}
 
 	function giveUp() {
-		if (confirm('Are you sure you want to give up and see the answer?')) {
-			gameStatus = 'gave-up';
-			completeGameOnServer(false);
-		}
+		showGiveUpConfirm = true;
+	}
+
+	function confirmGiveUp() {
+		gameStatus = 'gave-up';
+		completeGameOnServer(false);
+		showGiveUpConfirm = false;
 	}
 
 	function viewStats() {
@@ -238,7 +257,9 @@
 		<h1 class="mb-2 text-3xl font-bold text-gray-900 md:text-4xl dark:text-gray-100">
 			Crack the Code
 		</h1>
-		<p class="text-gray-600 dark:text-gray-400">Guess the 4 secret numbers (1-9, no repeats)</p>
+		<p class="text-gray-600 dark:text-gray-400">
+			Guess the 4 secret numbers (1-9, no repeats). You have {MAX_GUESSES} guesses!
+		</p>
 	</div>
 
 	<!-- Game Mode Selector -->
@@ -279,6 +300,7 @@
 				<div class="mb-6 flex items-center justify-between">
 					<h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">
 						Guess #{guessCount + 1}
+						<span class="text-sm font-normal text-gray-500">/ {MAX_GUESSES}</span>
 					</h2>
 					<button
 						onclick={() => (showRules = !showRules)}
@@ -312,7 +334,7 @@
 							oninput={(e) => handleInput(index, e)}
 							onkeydown={(e) => handleKeyDown(index, e)}
 							onpaste={handlePaste}
-							disabled={gameStatus !== 'playing'}
+							disabled={gameStatus !== 'playing' || isSubmitting}
 							class="h-16 w-16 rounded-xl border-2 text-center text-2xl font-bold md:h-20 md:w-20 md:text-3xl
                      {currentGuess[index]
 								? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
@@ -346,17 +368,19 @@
 				<div class="flex gap-3">
 					<button
 						onclick={submitGuess}
-						disabled={gameStatus !== 'playing' || currentGuess.some((n) => n === '')}
+						disabled={gameStatus !== 'playing' ||
+							currentGuess.some((n) => n === '') ||
+							isSubmitting}
 						class="flex-1 transform rounded-lg bg-indigo-600 px-6 py-4 font-semibold
                    text-white shadow-md transition-all duration-200 hover:scale-105
                    hover:bg-indigo-700 hover:shadow-lg
                    active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:disabled:bg-gray-700"
 					>
-						Submit Guess
+						{isSubmitting ? 'Verifying...' : 'Submit Guess'}
 					</button>
 					<button
 						onclick={giveUp}
-						disabled={gameStatus !== 'playing'}
+						disabled={gameStatus !== 'playing' || isSubmitting}
 						class="rounded-lg bg-gray-200 px-6 py-4 font-semibold text-gray-800
                    transition-all duration-200 hover:bg-gray-300 disabled:cursor-not-allowed
                    disabled:opacity-50 dark:bg-gray-800
@@ -371,7 +395,16 @@
 			<div
 				class="rounded-2xl border border-gray-200 bg-white p-6 shadow-lg md:p-8 dark:border-gray-800 dark:bg-gray-900"
 			>
-				<h2 class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">Guess History</h2>
+				<div class="mb-4 flex items-center justify-between">
+					<h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Guess History</h2>
+					<button
+						onclick={() => (guessSortOrder = guessSortOrder === 'desc' ? 'asc' : 'desc')}
+						class="flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
+					>
+						<span>{guessSortOrder === 'desc' ? 'Newest First' : 'Oldest First'}</span>
+						<span class="text-lg">{guessSortOrder === 'desc' ? '↓' : '↑'}</span>
+					</button>
+				</div>
 
 				{#if guessHistory.length === 0}
 					<div class="py-12 text-center">
@@ -380,7 +413,7 @@
 					</div>
 				{:else}
 					<div class="max-h-96 space-y-3 overflow-y-auto">
-						{#each guessHistory.slice().reverse() as history}
+						{#each sortedGuessHistory as history}
 							<div
 								class="flex flex-col items-center justify-center gap-4 rounded-lg border border-gray-200 bg-gray-50 p-4 md:flex-row md:justify-between md:gap-2 dark:border-gray-700 dark:bg-gray-800"
 							>
@@ -537,18 +570,31 @@
 		</div>
 	{/if}
 
-	<!-- Give Up Modal -->
-	{#if gameStatus === 'gave-up' || gameStatus === 'time-up'}
+	<!-- Give Up / Lost Modal -->
+	{#if gameStatus === 'gave-up' || gameStatus === 'time-up' || gameStatus === 'lost'}
 		<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
 			<div
 				class="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-2xl dark:border-gray-800 dark:bg-gray-900"
 			>
 				<div class="text-center">
-					<div class="mb-4 text-6xl">😔</div>
+					<div class="mb-4 text-6xl">
+						{gameStatus === 'time-up' ? '⏰' : gameStatus === 'lost' ? '📉' : '😔'}
+					</div>
 					<h2 class="mb-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
-						Better Luck Next Time!
+						{#if gameStatus === 'time-up'}
+							Time's Up!
+						{:else if gameStatus === 'lost'}
+							Out of Guesses!
+						{:else}
+							Better Luck Next Time!
+						{/if}
 					</h2>
-					<p class="mb-6 text-lg text-gray-600 dark:text-gray-400">The secret code was:</p>
+					<p class="mb-6 text-lg text-gray-600 dark:text-gray-400">
+						{#if gameStatus === 'lost'}
+							You've used all {MAX_GUESSES} guesses.
+						{/if}
+						The secret code was:
+					</p>
 
 					<div class="mb-6 flex justify-center space-x-2">
 						{#each secretCode as num}
@@ -572,6 +618,38 @@
 							class="flex-1 rounded-lg bg-gray-200 px-6 py-3 font-semibold text-gray-800 transition-colors duration-200 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
 						>
 							View Stats
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
+
+	<!-- Give Up Confirmation Modal -->
+	{#if showGiveUpConfirm}
+		<div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+			<div
+				class="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-8 shadow-2xl dark:border-gray-800 dark:bg-gray-900"
+			>
+				<div class="text-center">
+					<div class="mb-4 text-6xl">🤔</div>
+					<h2 class="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">Give up?</h2>
+					<p class="mb-6 text-gray-600 dark:text-gray-400">
+						Are you sure you want to give up? You will lose this game and see the secret code.
+					</p>
+
+					<div class="flex gap-3">
+						<button
+							onclick={confirmGiveUp}
+							class="flex-1 rounded-lg bg-red-600 px-6 py-3 font-semibold text-white transition-colors duration-200 hover:bg-red-700"
+						>
+							Yes, Show Me
+						</button>
+						<button
+							onclick={() => (showGiveUpConfirm = false)}
+							class="flex-1 rounded-lg bg-gray-200 px-6 py-3 font-semibold text-gray-800 transition-colors duration-200 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+						>
+							Keep Playing
 						</button>
 					</div>
 				</div>

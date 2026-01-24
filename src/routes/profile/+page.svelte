@@ -43,8 +43,24 @@
 			color: 'yellow'
 		},
 		{ label: 'Current Streak', value: stats.currentStreak, icon: '🔥', color: 'orange' },
-		{ label: 'Avg Guesses', value: stats.averageGuesses || 'N/A', icon: '📈', color: 'purple' }
+		{
+			label: 'Avg Guesses',
+			value: stats.averageGuesses.toFixed(1) || 'N/A',
+			icon: '📈',
+			color: 'purple'
+		}
 	]);
+
+	const achievementMetadata: Record<string, { icon: string; desc: string }> = {
+		'First Victory': { icon: '🎯', desc: 'Won your first game' },
+		Sniper: { icon: '🎯', desc: 'Won a game in 5 guesses or less' },
+		'Master Codebreaker': { icon: '👑', desc: 'Won a game in 8 guesses or less' },
+		'Quick Thinker': { icon: '⚡', desc: 'Won a game in 10 guesses or less' },
+		Perfectionist: { icon: '💎', desc: 'Won 10 total games' },
+		'Veteran Player': { icon: '🎖️', desc: 'Played 25 games' },
+		'On Fire': { icon: '🔥', desc: 'Won 5 games in a row' },
+		'Elite Agent': { icon: '💎', desc: 'Won 50 total games' }
+	};
 </script>
 
 <svelte:head>
@@ -65,24 +81,50 @@
 					{user.username.charAt(0).toUpperCase()}
 				</div>
 				<div class="mb-2">
-					<h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{user.username}</h1>
+					<div class="flex items-center gap-3">
+						<h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">{user.username}</h1>
+						<span
+							class="rounded-lg bg-indigo-600 px-2 py-1 text-xs font-black text-white uppercase shadow-sm"
+							>LVL {stats.level}</span
+						>
+					</div>
 					<p class="text-gray-600 dark:text-gray-400">{user.email}</p>
 				</div>
 			</div>
 
-			<div class="flex flex-wrap items-center gap-4">
-				<span
-					class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400"
-				>
-					Member since {formatDate(user.createdAt)}
-				</span>
-				{#if user.role === 'admin'}
+			<div class="mt-6 flex flex-wrap items-center gap-6">
+				<div class="flex flex-wrap items-center gap-4">
 					<span
-						class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+						class="inline-flex items-center rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400"
 					>
-						Admin
+						Member since {formatDate(user.createdAt)}
 					</span>
-				{/if}
+					{#if user.role === 'admin'}
+						<span
+							class="inline-flex items-center rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+						>
+							Admin
+						</span>
+					{/if}
+				</div>
+
+				<!-- XP Section -->
+				<div class="flex min-w-[200px] flex-1 flex-col gap-2">
+					<div
+						class="flex justify-between text-xs font-bold tracking-tighter text-gray-500 uppercase"
+					>
+						<span>XP: {stats.xp}</span>
+						<span>Next Level: {Math.pow(stats.level, 2) * 100} XP</span>
+					</div>
+					<div
+						class="h-3 w-full max-w-sm overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800"
+					>
+						<div
+							class="h-full bg-linear-to-r from-indigo-500 to-purple-500 transition-all duration-1000"
+							style="width: {Math.min(100, (stats.xp / (Math.pow(stats.level, 2) * 100)) * 100)}%"
+						></div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -120,13 +162,16 @@
 				{#if stats.achievements && stats.achievements.length > 0}
 					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						{#each stats.achievements as achievement}
+							{@const meta = achievementMetadata[achievement] || { icon: '🏅', desc: 'Unlocked' }}
 							<div
-								class="flex items-center space-x-4 rounded-xl border border-gray-100 bg-white p-4 dark:border-gray-800 dark:bg-gray-900"
+								class="flex items-center space-x-4 rounded-xl border border-gray-100 bg-white p-4 transition-all hover:border-indigo-200 dark:border-gray-800 dark:bg-gray-900 dark:hover:border-indigo-900"
 							>
-								<div class="text-3xl">🏅</div>
+								<div class="text-3xl">{meta.icon}</div>
 								<div>
-									<h3 class="font-semibold text-gray-900 dark:text-gray-100">{achievement}</h3>
-									<p class="text-sm text-gray-500">Unlocked</p>
+									<h3 class="font-bold text-gray-900 dark:text-gray-100">{achievement}</h3>
+									<p class="text-xs font-medium text-indigo-600 dark:text-indigo-400">
+										{meta.desc}
+									</p>
 								</div>
 							</div>
 						{/each}

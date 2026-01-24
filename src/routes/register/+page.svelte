@@ -8,6 +8,40 @@
 	let error = $state('');
 	let loading = $state(false);
 
+	let usernameAvailability = $state({ checking: false, available: true, message: '' });
+	let usernameTimeout: ReturnType<typeof setTimeout>;
+
+	// Check username availability
+	async function checkUsername(name: string) {
+		if (name.length < 3) {
+			usernameAvailability = { checking: false, available: false, message: 'Too short' };
+			return;
+		}
+
+		usernameAvailability.checking = true;
+		try {
+			const res = await fetch(`/api/auth/check-username?username=${encodeURIComponent(name)}`);
+			const data = await res.json();
+			usernameAvailability = {
+				checking: false,
+				available: data.available,
+				message: data.message || ''
+			};
+		} catch (err) {
+			console.error('Check username error:', err);
+			usernameAvailability.checking = false;
+		}
+	}
+
+	$effect(() => {
+		if (username) {
+			clearTimeout(usernameTimeout);
+			usernameTimeout = setTimeout(() => checkUsername(username), 500);
+		} else {
+			usernameAvailability = { checking: false, available: true, message: '' };
+		}
+	});
+
 	// Password strength indicator
 	const passwordStrength = $derived.by(() => {
 		if (password.length === 0) return { strength: 0, text: '', color: '' };
@@ -109,12 +143,30 @@
 						bind:value={username}
 						required
 						disabled={loading}
-						class="w-full rounded-lg border-2 border-gray-300 bg-white px-4 py-3 text-gray-900 transition-colors focus:border-indigo-500 focus:ring-4 focus:ring-indigo-300 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:focus:ring-indigo-700"
+						class="w-full rounded-lg border-2 bg-white px-4 py-3 text-gray-900 transition-colors focus:ring-4 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-gray-800 dark:text-gray-100 {username.length >=
+						3
+							? usernameAvailability.checking
+								? 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-300 dark:border-gray-700 dark:focus:ring-indigo-700'
+								: usernameAvailability.available
+									? 'border-green-500 focus:border-green-600 focus:ring-green-300 dark:border-green-600 dark:focus:ring-green-800'
+									: 'border-red-500 focus:border-red-600 focus:ring-red-300 dark:border-red-600 dark:focus:ring-red-800'
+							: 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-300 dark:border-gray-700 dark:focus:ring-indigo-700'}"
 						placeholder="Choose a username"
 					/>
-					<p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-						3-20 characters, letters, numbers, and underscores only
-					</p>
+					<div class="mt-1 flex items-center justify-between">
+						<p class="text-xs text-gray-500 dark:text-gray-400">
+							3-20 characters, letters, numbers, and underscores only
+						</p>
+						{#if username.length >= 3}
+							{#if usernameAvailability.checking}
+								<span class="animate-pulse text-xs text-gray-500">Checking...</span>
+							{:else if !usernameAvailability.available}
+								<span class="text-xs font-medium text-red-500">{usernameAvailability.message}</span>
+							{:else}
+								<span class="text-xs font-medium text-green-500">Available!</span>
+							{/if}
+						{/if}
+					</div>
 				</div>
 
 				<!-- Email -->
@@ -202,7 +254,13 @@
 				<!-- Submit Button -->
 				<button
 					type="submit"
-					disabled={loading || !username || !email || !password || !confirmPassword}
+					disabled={loading ||
+						!username ||
+						!email ||
+						!password ||
+						!confirmPassword ||
+						!usernameAvailability.available ||
+						usernameAvailability.checking}
 					class="w-full transform rounded-lg bg-indigo-600 px-6 py-4 font-semibold text-white shadow-md transition-all duration-200 hover:scale-105 hover:bg-indigo-700 hover:shadow-lg active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:opacity-50 dark:disabled:bg-gray-700"
 				>
 					{loading ? 'Creating account...' : 'Create Account'}

@@ -6,7 +6,9 @@ import {
 	setSessionCookie,
 	isValidEmail,
 	isValidPassword,
-	isValidUsername
+	isValidUsername,
+	isUsernameTaken,
+	isEmailTaken
 } from '$lib/server/auth';
 import type { RequestHandler } from './$types';
 import type { User, UserStats } from '$lib/server/db/types';
@@ -37,14 +39,11 @@ export const POST: RequestHandler = async (event) => {
 		const usersCollection = await getUsersCollection();
 
 		// Check if user already exists
-		const existingUser = await usersCollection.findOne({
-			$or: [{ email: email.toLowerCase() }, { username: username }]
-		});
+		if (await isEmailTaken(email)) {
+			return json({ error: 'Email already in use' }, { status: 400 });
+		}
 
-		if (existingUser) {
-			if (existingUser.email === email.toLowerCase()) {
-				return json({ error: 'Email already in use' }, { status: 400 });
-			}
+		if (await isUsernameTaken(username)) {
 			return json({ error: 'Username already taken' }, { status: 400 });
 		}
 
@@ -66,8 +65,11 @@ export const POST: RequestHandler = async (event) => {
 		const userStatsCollection = await getUserStatsCollection();
 		const initialStats: Omit<UserStats, '_id'> = {
 			userId: userId,
+			username: username,
 			gamesPlayed: 0,
 			gamesWon: 0,
+			xp: 0,
+			level: 1,
 			totalGuesses: 0,
 			bestScore: null,
 			currentStreak: 0,
