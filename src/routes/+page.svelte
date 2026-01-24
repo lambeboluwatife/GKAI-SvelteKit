@@ -56,30 +56,35 @@
 </script>
 
 <svelte:head>
-	<title>GKAI - Getting Killed And Injured | Classic Logic Game</title>
+	<title>GKAI - Getting Killed And Injured | Classic Logic & Number Guessing Game</title>
 	<meta
 		name="description"
-		content="Challenge your logic with GKAI, a childhood classic number guessing game. Can you crack the 4-digit code?"
+		content="Challenge your mind with GKAI, the classic logical number guessing game. Use deduction to crack the 4-digit code. Play Normal or Timer modes!"
 	/>
-	<meta property="og:title" content="GKAI - Logic Number Guessing Game" />
-	<meta property="og:url" content="https://yourdomain.com/" />
-	<meta property="og:description" content="Can you crack the code?" />
-	<meta property="og:image" content="/opengraph.png" />
+	<meta
+		name="keywords"
+		content="GKAI, logic game, number guessing, code breaker, childhood games, deduction game, SvelteKit game"
+	/>
 
-	<!-- Facebook Meta Tags -->
-	<meta property="og:url" content="https://gkai-svelte-kit.vercel.app/" />
+	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content="website" />
-	<meta property="og:title" content="GKAI - Logic Number Guessing Game" />
-	<meta property="og:description" content="Can you crack the code?" />
-	<meta property="og:image" content="https://gkai-svelte-kit.vercel.app/opengraph.png" />
+	<meta property="og:url" content="https://gkai-svelte-kit.vercel.app/" />
+	<meta property="og:title" content="GKAI - The Ultimate Logic Code-Breaking Game" />
+	<meta
+		property="og:description"
+		content="Master the art of deduction. Can you crack the 4-digit code before you run out of guesses?"
+	/>
+	<meta property="og:image" content="https://gkai-svelte-kit.vercel.app/og-image.png" />
 
-	<!-- Twitter Meta Tags -->
+	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta property="twitter:domain" content="gkai-svelte-kit.vercel.app" />
-	<meta property="twitter:url" content="https://gkai-svelte-kit.vercel.app/" />
+	<meta name="twitter:url" content="https://gkai-svelte-kit.vercel.app/" />
 	<meta name="twitter:title" content="GKAI - Logic Number Guessing Game" />
-	<meta name="twitter:description" content="Can you crack the code?" />
-	<meta name="twitter:image" content="https://gkai-svelte-kit.vercel.app/opengraph.png" />
+	<meta
+		name="twitter:description"
+		content="Challenge your brain with GKAI. The classic pen-and-paper game now available online!"
+	/>
+	<meta name="twitter:image" content="https://gkai.netlify.app/og-image.png" />
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

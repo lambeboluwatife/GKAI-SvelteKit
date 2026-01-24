@@ -64,11 +64,13 @@
 </script>
 
 <svelte:head>
-	<title>How to Play GKAI - Rules & Instructions</title>
+	<title>How to Play GKAI - Master Logic & Strategy</title>
 	<meta
 		name="description"
-		content="Learn how to play GKAI. Understand the rules, killed vs injured mechanics, and strategies to crack the code faster."
+		content="Master the rules of Getting Killed And Injured. Learn the difference between killed and injured numbers and discover winning strategies to crack any code."
 	/>
+	<meta property="og:title" content="GKAI Game Guide - Rules & Strategies" />
+	<meta property="og:url" content="https://gkai-svelte-kit.vercel.app/how-to-play" />
 </svelte:head>
 
 <div class="mx-auto max-w-5xl px-4 py-20 sm:px-6 lg:px-8">

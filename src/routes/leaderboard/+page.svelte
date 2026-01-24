@@ -61,7 +61,13 @@
 </script>
 
 <svelte:head>
-	<title>Leaderboard - GKAI | Global Rankings</title>
+	<title>Global Leaderboard - GKAI | Top Logic Agents</title>
+	<meta
+		name="description"
+		content="See the top-ranked players in GKAI. Compare your logic skills against the best agents globally on our live leaderboard."
+	/>
+	<meta property="og:title" content="GKAI Global Rankings" />
+	<meta property="og:url" content="https://gkai-svelte-kit.vercel.app/leaderboard" />
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

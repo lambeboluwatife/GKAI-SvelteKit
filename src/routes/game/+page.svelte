@@ -244,11 +244,17 @@
 </script>
 
 <svelte:head>
-	<title>Play GKAI - Crack the Code</title>
+	<title>Play GKAI - Ultimate Logic Code-Breaker Game</title>
 	<meta
 		name="description"
-		content="Play GKAI now. Use logic and deduction to guess the secret 4-digit code."
+		content="Crack the code! Use your deduction skills to guess the 4-digit secret number. Experience the classic game with Normal and Timer modes."
 	/>
+	<meta property="og:title" content="Play GKAI - Logic Game" />
+	<meta
+		property="og:description"
+		content="Can you crack the code in under 30 guesses? Challenge your mind now!"
+	/>
+	<meta property="og:url" content="https://gkai-svelte-kit.vercel.app/game" />
 </svelte:head>
 
 <div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">

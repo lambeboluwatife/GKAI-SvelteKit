@@ -135,11 +135,13 @@
 </script>
 
 <svelte:head>
-	<title>Your Stats - GKAI</title>
+	<title>Your Game Stats - GKAI Achievement Tracker</title>
 	<meta
 		name="description"
-		content="Track your GKAI performance, achievements, and progress. See your win rate, best scores, and game history."
+		content="Track your progress in GKAI. View your win rate, guess distribution, and unlocked achievements as you climb the ranks to become an Elite Agent."
 	/>
+	<meta property="og:title" content="GKAI Personal Stats & Achievements" />
+	<meta property="og:url" content="https://gkai-svelte-kit.vercel.app/stats" />
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">

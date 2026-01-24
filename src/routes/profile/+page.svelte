@@ -64,7 +64,7 @@
 </script>
 
 <svelte:head>
-	<title>{user.username}'s Profile - GKAI</title>
+	<title>{user.username}'s Agent Profile - GKAI</title>
 </svelte:head>
 
 <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
