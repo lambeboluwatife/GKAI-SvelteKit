@@ -120,8 +120,8 @@ Built around clean REST principles:
 
 ---
 
-## Live Demo
+## 🔗 Live Demo
 👉 https://gkai-svelte-kit.vercel.app/
 
 ## 🔗 Repository
-👉 https://github.com/lambeboluwatife/gkai
+👉 https://github.com/lambeboluwatife/GKAI-SvelteKit
